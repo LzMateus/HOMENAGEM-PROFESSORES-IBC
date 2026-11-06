@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homenagem</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      margin: 0; 
+      background-image: url('fundo.png'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-color: #f4f4f9; 
+    }
+
+    .card { 
+      background: #fff; 
+      padding: 24px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+      text-align: center; 
+      max-width: 380px; 
+      width: 100%; 
+    }
+
+    .img-cabecalho {
+      width: 80%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    /* Estilos do Player de Áudio */
+    .player-container {
+      margin-top: 16px;
+    }
+
+    button { 
+      background-color: #750008; 
+      color: white; 
+      border: none; 
+      padding: 12px 20px; 
+      font-size: 16px; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      width: 100%; 
+      font-weight: bold; 
+    }
+
+    button:active { 
+      background-color: #500005; 
+    }
+
+    /* Estilo da Barra de Progresso */
+    .progress-container {
+      background: #e0e0e0;
+      border-radius: 4px;
+      height: 8px;
+      width: 100%;
+      cursor: pointer;
+      margin: 12px 0 6px 0;
+      position: relative;
+    }
+
+    .progress-bar {
+      background: #4a90e2;
+      height: 100%;
+      width: 0%;
+      border-radius: 4px;
+      transition: width 0.1s linear;
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- IMAGEM DO CABEÇALHO -->
+    <img src="cabecalho.png" alt="Cabeçalho Homenagem" class="img-cabecalho">
+
+    <!-- Botão Play / Pause -->
+    <button id="btnPlay" onclick="alternarAudio()">▶️ Reproduzir Mensagem</button>
+
+    <!-- Barra de Progresso e Tempos -->
+    <div class="player-container">
+      <div class="progress-container" id="progressContainer" onclick="definirProgresso(event)">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="time-info">
+        <span id="currentTime">0:00</span>
+        <span id="duration">0:00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arquivo de áudio -->
+  <audio id="audioHomenagem">
+    <source src="audio_alunos.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const audio = document.getElementById("audioHomenagem");
+    const btnPlay = document.getElementById("btnPlay");
+    const progressBar = document.getElementById("progressBar");
+    const progressContainer = document.getElementById("progressContainer");
+    const currentTimeEl = document.getElementById("currentTime");
+    const durationEl = document.getElementById("duration");
+
+    // Formatar os segundos em minutos:segundos (ex: 1:30)
+    function formatarTempo(segundos) {
+      const min = Math.floor(segundos / 60);
+      const seg = Math.floor(segundos % 60);
+      return `${min}:${seg < 10 ? '0' : ''}${seg}`;
+    }
+
+    // Atualiza a duração total assim que o áudio carrega
+    audio.addEventListener("loadedmetadata", () => {
+      durationEl.textContent = formatarTempo(audio.duration);
+    });
+
+    // Atualiza a barra e o tempo atual enquanto o áudio toca
+    audio.addEventListener("timeupdate", () => {
+      const progresso = (audio.currentTime / audio.duration) * 100;
+      progressBar.style.width = `${progresso}%`;
+      currentTimeEl.textContent = formatarTempo(audio.currentTime);
+
+      if (audio.ended) {
+        btnPlay.textContent = "▶️ Reproduzir Mensagem";
+      }
+    });
+
+    // Função do Botão Play/Pause
+    function alternarAudio() {
+      if (audio.paused) {
+        audio.play();
+        btnPlay.textContent = "⏸️ Pausar";
+      } else {
+        audio.pause();
+        btnPlay.textContent = "▶️ Continuar";
+      }
+    }
+
+    // Permitir clicar na barra para pular para aquela parte do áudio
+    function definirProgresso(e) {
+      const larguraTotal = progressContainer.clientWidth;
+      const cliqueX = e.offsetX;
+      const duracaoAudio = audio.duration;
+      audio.currentTime = (cliqueX / larguraTotal) * duracaoAudio;
+    }
+  </script>
+
+</body>
+</html>
